@@ -9,12 +9,15 @@ public class Main {
 	{
 		Scanner scanner = null;
 		try {
-			scanner = new Scanner(new File("C://users//onur//workspace//pvrp//src//p1.txt"));
+			scanner = new Scanner(new File("p1.txt"));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		ArrayList<Integer> tall = new ArrayList<Integer>();
+		ArrayList<ArrayList<Double>> header = new ArrayList<>();
+		ArrayList<ArrayList<Double>> data = new ArrayList<>();
+
 		int i = 0;
 		while(scanner.hasNextLine()){
 		   String line = scanner.nextLine();
@@ -25,10 +28,13 @@ public class Main {
 		   if(list.size() == 0)
 			   System.out.println("Empty line");
 		   else if(list.size() < 5)
-			   System.out.println("Header: " + list);
+			   header.add(new ArrayList<Double>(list));
 		   else
-			   System.out.println("Data: " + list);
+			   data.add(new ArrayList<Double>(list));
 		}
+		
+		System.out.println(header);
+		System.out.println(data);
 	}
 
 }
