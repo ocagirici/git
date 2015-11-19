@@ -1,16 +1,21 @@
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 public class Customer
 {
+	Random random = new Random();
+	int instance;
 	int i,q,f,a,e,l;
 	double d;
 	int[] list;
 	double x,y;
 	ArrayList<Neighbor> neighbors = new ArrayList<>();
 	boolean timeWindow = false;
-	public Customer(ArrayList<Double> data)
+	public Customer(ArrayList<Double> data, int instance)
 	{
+		this.instance = instance;
 		if(data.size() == 7)
 		{
 			this.i = 0;
@@ -50,32 +55,38 @@ public class Customer
 		return Math.sqrt((this.x - that.x)*(this.x - that.x) + (this.y - that.y)*(this.y - that.y));
 	}
 	
-	public void avgComputeServiceDuration(int m, int n, int timeLimit)
+	public void avgComputeServiceDuration(int m, int n, double avgDist, double avgDemand)
 	{
 		double sum = 0;
 //		for(int j=1; j<6; j++)
 //			sum += m[i][j];
 //		
 //		d[i] = (7*avg)/3 + (sum/5);
-		double avgDist = 0;
-		Collections.sort(neighbors);
-		for(int i=0; i<5; i++)
-			sum+=neighbors.get(i).distance;
-		avgDist = sum/5;
 		
-		double lambda = timeLimit - (avgDist*(n+m))/m;
-		System.out.println(lambda);
-		d = ((7*lambda)/3);
+		Collections.sort(neighbors);
+		for(int i=0; neighbors.get(i).distance<=avgDist; i++)
+			sum++;
+		
+		//double lambda = avgDist - nearestDist;
+		
+		d = sum*(q/avgDemand);
+		d = d + d*random.nextDouble();
+//		if(d < q)
+//		System.out.printf("%d:\t\t%.2f\t%.2f\t%.2f\t%d\t%.2f\t%.2f\n",instance,d,nearestDist,avgDist,q,avgDemand,(nearestDist/avgDist),(q/avgDemand));
 	}
+	
+
 
 	public String toString()
 	{
+		DecimalFormat numform = new DecimalFormat(" 00.00;-00.00"); 
+
 		StringBuilder str = new StringBuilder();
-		str.append(String.format("%d %.2f %.2f %.2f %d %d %d",i,x,y,d,q,f,a).toString());
+		str.append(String.format("%d\t%.2f\t%.2f\t%.2f\t%d\t%d\t%d\t",i,x,y,d,q,f,a).toString());
 		for(int i=0; i<list.length; i++)
 			str.append(list[i] + " ");
 		if(timeWindow)
-			str.append("%d %d",e,l);
+			str.append("%d\t\t%d",e,l);
 		return str.toString();
 	}
 	//		i	=	customer number

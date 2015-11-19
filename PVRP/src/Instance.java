@@ -1,17 +1,22 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
 
 public class Instance {
+	static int numberOfInstances = 0;
 	int id;
 	int type, m, n, t;
 	int[] D;
 	int[] Q;
 	Customer[] customer;
-	public Instance(String instance, int id)
+	public Instance(String instance)
 	{
+		numberOfInstances++;
+		id = numberOfInstances;
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(new File(instance));
@@ -46,7 +51,7 @@ public class Instance {
 			lineScanner = new Scanner(scanner.nextLine());
 			while(lineScanner.hasNextDouble())
 				list.add(lineScanner.nextDouble());
-			customer[i] = new Customer(list);
+			customer[i] = new Customer(list,id);
 		}
 	
 		
@@ -59,27 +64,52 @@ public class Instance {
 		setServiceDurations();
 	}
 	
-	public int timeLimit()
+	public double avgDistance()
 	{
-		int min = 0;
-		for(int i=1; i<t; i++)
-			if(Q[i] < Q[min])
-				min = i;
-		return Q[min];
+		double sum = 0;
+		int E = 0;
+		for(int i=0; i<n; i++)
+			for(Neighbor neighbor : customer[i].neighbors)
+			{
+				sum += neighbor.distance;
+				E++;
+			}
+		return sum/(2*E);
 	}
 	
 	public void setServiceDurations()
 	{
-		int timeLimit = timeLimit();
+		double avgDistance = avgDistance();
+		System.out.println(avgDistance);
 		double sum = 0;
 		for(int i=0; i<n; i++)
 			sum += customer[i].q;
 		double avgDemand = sum/n;
-		for(int i=0; i<n; i++)
-			customer[i].avgComputeServiceDuration(m, n, timeLimit);
+		for(int i=1; i<n; i++)
+			customer[i].avgComputeServiceDuration(m, n, avgDistance, avgDemand);
 		
 	}
-	
+	public void toFile()
+	{
+		PrintWriter writer = null;
+		new File("C:\\instances").mkdir();
+
+		try {
+			writer = new PrintWriter("C:\\instances\\instance"+id+".txt", "UTF-8");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		writer.println(String.format("%d %d %d %d", type,m,n,t));
+		for(int i=0; i<t; i++)
+			writer.println(D[i] + " " + Q[i] + "\n");
+		for(int i=0; i<n; i++)
+			writer.println(customer[i] + "\n");
+		writer.close();
+	}
 	public String toString()
 	{
 		StringBuilder str = new StringBuilder();

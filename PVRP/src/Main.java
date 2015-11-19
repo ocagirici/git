@@ -12,8 +12,11 @@ public class Main {
 	
 	public static void main(String[] args)
 	{
-		Instance instance = new Instance("p5.txt",0);
-		System.out.println(instance);
+		for(int i=0; i<42; i++)
+		{
+			new Instance("p"+(i+1)+".txt").toFile();
+			
+		}
 	
 //		Scanner scanner = null;
 //		try {
